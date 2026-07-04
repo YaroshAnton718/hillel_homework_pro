@@ -1,0 +1,3 @@
+Teddy Bear,soft toy,500,10
+Lego City,constructor,1200,5
+Toy Car,toy,300,7
