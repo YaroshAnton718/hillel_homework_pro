@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>Library</h1>
+    <nav>
+        <a href="/">Main</a> |
+        <a href="/books">Books</a> |
+        <a href="/about">About</a>
+    </nav>
+    <hr>
+</header>
+{% block content %}
+{% endblock %}
+</body>
+</html>
