@@ -1,0 +1,30 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h2>Видалення книги</h2>
+
+<p>
+    Ви впевнені, що хочете видалити:
+    <strong>{{ object.title }}</strong>?
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <button
+        type="submit"
+        class="btn btn-danger"
+    >
+        Видалити
+    </button>
+
+    <a
+        href="{% url 'store:book_list' %}"
+        class="btn btn-secondary"
+    >
+        Скасувати
+    </a>
+</form>
+
+{% endblock %}

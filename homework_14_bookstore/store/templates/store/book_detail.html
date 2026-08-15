@@ -1,0 +1,26 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h2>{{ book.title }}</h2>
+
+<p><strong>Автор:</strong> {{ book.author }}</p>
+
+<p><strong>Категорія:</strong> {{ book.category }}</p>
+
+<p><strong>Ціна:</strong> {{ book.price }}</p>
+
+<p><strong>Опис:</strong></p>
+
+<p>{{ book.description }}</p>
+
+<p><strong>Кількість:</strong> {{ book.stock }}</p>
+
+<a
+    href="{% url 'store:book_list' %}"
+    class="btn btn-secondary"
+>
+    Назад
+</a>
+
+{% endblock %}

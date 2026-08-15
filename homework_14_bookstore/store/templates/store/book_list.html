@@ -1,0 +1,103 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h1>Список книг</h1>
+
+<form method="get" class="mb-3">
+    <input
+        type="text"
+        name="category"
+        class="form-control"
+        placeholder="ID категорії"
+    >
+
+    <button
+        type="submit"
+        class="btn btn-primary mt-2"
+    >
+        Фільтр
+    </button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Назва</th>
+            <th>Автор</th>
+            <th>Ціна</th>
+            <th>Категорія</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.price }}</td>
+            <td>{{ book.category }}</td>
+
+            <td>
+                <a
+                    href="{% url 'store:book_detail' book.pk %}"
+                    class="btn btn-info btn-sm"
+                >
+                    Деталі
+                </a>
+
+                <a
+                    href="{% url 'store:book_update' book.pk %}"
+                    class="btn btn-warning btn-sm"
+                >
+                    Редагувати
+                </a>
+
+                <a
+                    href="{% url 'store:book_delete' book.pk %}"
+                    class="btn btn-danger btn-sm"
+                >
+                    Видалити
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a
+                class="page-link"
+                href="?page={{ page_obj.previous_page_number }}"
+            >
+                Previous
+            </a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                {{ page_obj.number }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a
+                class="page-link"
+                href="?page={{ page_obj.next_page_number }}"
+            >
+                Next
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+{% endblock %}
