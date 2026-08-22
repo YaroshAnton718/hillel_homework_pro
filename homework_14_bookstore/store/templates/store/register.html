@@ -1,0 +1,27 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h2>Реєстрація</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button
+        type="submit"
+        class="btn btn-success"
+    >
+        Зареєструватися
+    </button>
+</form>
+
+<p class="mt-3">
+    Вже є акаунт?
+    <a href="{% url 'store:login' %}">
+        Увійти
+    </a>
+</p>
+
+{% endblock %}
