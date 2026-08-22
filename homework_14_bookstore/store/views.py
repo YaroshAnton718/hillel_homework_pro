@@ -1,13 +1,30 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     UpdateView,
-    DeleteView
+    DeleteView,
 )
 
+from .forms import RegisterForm
 from .models import Book
+
+
+class RegisterView(CreateView):
+    form_class = RegisterForm
+    template_name = 'store/register.html'
+    success_url = reverse_lazy('store:login')
+
+
+class BookLoginView(LoginView):
+    template_name = 'store/login.html'
+
+
+class BookLogoutView(LogoutView):
+    pass
 
 
 class BookListView(ListView):
@@ -33,8 +50,14 @@ class BookDetailView(DetailView):
     context_object_name = 'book'
 
 
-class BookCreateView(CreateView):
+class BookCreateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    CreateView
+):
     model = Book
+    permission_required = 'store.manage_books'
+
     fields = [
         'category',
         'title',
@@ -43,12 +66,19 @@ class BookCreateView(CreateView):
         'description',
         'stock'
     ]
+
     template_name = 'store/book_form.html'
     success_url = reverse_lazy('store:book_list')
 
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UpdateView
+):
     model = Book
+    permission_required = 'store.manage_books'
+
     fields = [
         'category',
         'title',
@@ -57,11 +87,18 @@ class BookUpdateView(UpdateView):
         'description',
         'stock'
     ]
+
     template_name = 'store/book_form.html'
     success_url = reverse_lazy('store:book_list')
 
 
-class BookDeleteView(DeleteView):
+class BookDeleteView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    DeleteView
+):
     model = Book
+    permission_required = 'store.manage_books'
+
     template_name = 'store/book_confirm_delete.html'
     success_url = reverse_lazy('store:book_list')

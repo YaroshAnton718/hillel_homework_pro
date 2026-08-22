@@ -20,6 +20,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
+
         <a
             class="navbar-brand"
             href="{% url 'store:book_list' %}"
@@ -27,12 +28,56 @@
             BookStore
         </a>
 
-        <a
-            class="btn btn-success"
-            href="{% url 'store:book_create' %}"
-        >
-            Додати книгу
-        </a>
+        <div>
+            {% if user.is_authenticated %}
+
+                <span class="text-white me-3">
+                    {{ user.username }}
+                </span>
+
+                {% if perms.store.manage_books %}
+                    <a
+                        class="btn btn-success me-2"
+                        href="{% url 'store:book_create' %}"
+                    >
+                        Додати книгу
+                    </a>
+                {% endif %}
+
+                <form
+                    method="post"
+                    action="{% url 'store:logout' %}"
+                    class="d-inline"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-light"
+                    >
+                        Вийти
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a
+                    class="btn btn-outline-light me-2"
+                    href="{% url 'store:login' %}"
+                >
+                    Увійти
+                </a>
+
+                <a
+                    class="btn btn-success"
+                    href="{% url 'store:register' %}"
+                >
+                    Реєстрація
+                </a>
+
+            {% endif %}
+        </div>
+
     </div>
 </nav>
 

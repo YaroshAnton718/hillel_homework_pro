@@ -1,4 +1,10 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -6,6 +12,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Book(models.Model):
     category = models.ForeignKey(
@@ -22,6 +29,11 @@ class Book(models.Model):
     )
     description = models.TextField()
     stock = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        permissions = [
+            ('manage_books', 'Can manage books'),
+        ]
 
     def __str__(self):
         return self.title
