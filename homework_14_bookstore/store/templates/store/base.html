@@ -29,6 +29,13 @@
         </a>
 
         <div>
+            <a
+                href="{% url 'store:cart' %}"
+                class="btn btn-outline-light me-2"
+            >
+                Кошик
+            </a>
+
             {% if user.is_authenticated %}
 
                 <span class="text-white me-3">
