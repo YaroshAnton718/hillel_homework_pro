@@ -1,0 +1,33 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h2>Оплата успішна</h2>
+
+<p>
+    Дякуємо за замовлення.
+</p>
+
+<p>
+    Номер замовлення:
+    <strong>#{{ order.pk }}</strong>
+</p>
+
+<p>
+    Сума:
+    <strong>{{ order.total }} UAH</strong>
+</p>
+
+<p>
+    Статус:
+    <strong>{{ order.get_status_display }}</strong>
+</p>
+
+<a
+    href="{% url 'store:book_list' %}"
+    class="btn btn-primary"
+>
+    До книг
+</a>
+
+{% endblock %}

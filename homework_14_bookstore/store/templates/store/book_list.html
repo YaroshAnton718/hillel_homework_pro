@@ -47,6 +47,27 @@
                     Деталі
                 </a>
 
+                <form
+                    method="post"
+                    action="{% url 'store:cart_add' book.pk %}"
+                    class="d-inline"
+                >
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="quantity"
+                        value="1"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-sm"
+                    >
+                        У кошик
+                    </button>
+                </form>
+
                 <a
                     href="{% url 'store:book_update' book.pk %}"
                     class="btn btn-warning btn-sm"

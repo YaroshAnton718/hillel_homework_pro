@@ -9,6 +9,12 @@ from .views import (
     RegisterView,
     BookLoginView,
     BookLogoutView,
+    cart_detail,
+    cart_add,
+    cart_remove,
+    cart_clear,
+    checkout,
+    checkout_success,
 )
 
 app_name = 'store'
@@ -22,9 +28,49 @@ urlpatterns = [
 
     path('logout/', BookLogoutView.as_view(), name='logout'),
 
-    path('book/<int:pk>/', BookDetailView.as_view(), name='book_detail'),
+    path('cart/', cart_detail, name='cart'),
 
-    path('book/create/', BookCreateView.as_view(), name='book_create'),
+    path(
+        'cart/add/<int:pk>/',
+        cart_add,
+        name='cart_add'
+    ),
+
+    path(
+        'cart/remove/<int:pk>/',
+        cart_remove,
+        name='cart_remove'
+    ),
+
+    path(
+        'cart/clear/',
+        cart_clear,
+        name='cart_clear'
+    ),
+
+    path(
+        'checkout/',
+        checkout,
+        name='checkout'
+    ),
+
+    path(
+        'checkout/success/',
+        checkout_success,
+        name='checkout_success'
+    ),
+
+    path(
+        'book/<int:pk>/',
+        BookDetailView.as_view(),
+        name='book_detail'
+    ),
+
+    path(
+        'book/create/',
+        BookCreateView.as_view(),
+        name='book_create'
+    ),
 
     path(
         'book/<int:pk>/update/',

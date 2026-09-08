@@ -1,0 +1,4 @@
+Django
+psycopg
+stripe
+django-debug-toolbar
