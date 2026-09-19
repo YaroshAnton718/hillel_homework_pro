@@ -1,25 +1,30 @@
 {% extends 'store/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
-<h2>Кошик</h2>
+<h2>{% translate "Cart" %}</h2>
 
 {% if cart %}
 
 <table class="table table-striped">
+
     <thead>
         <tr>
-            <th>Книга</th>
-            <th>Ціна</th>
-            <th>Кількість</th>
-            <th>Сума</th>
-            <th>Дії</th>
+            <th>{% translate "Book" %}</th>
+            <th>{% translate "Price" %}</th>
+            <th>{% translate "Quantity" %}</th>
+            <th>{% translate "Total" %}</th>
+            <th>{% translate "Actions" %}</th>
         </tr>
     </thead>
 
     <tbody>
+
         {% for item in cart %}
+
         <tr>
+
             <td>
                 {{ item.book.title }}
             </td>
@@ -37,6 +42,7 @@
             </td>
 
             <td>
+
                 <form
                     method="post"
                     action="{% url 'store:cart_remove' item.book.pk %}"
@@ -47,17 +53,24 @@
                         type="submit"
                         class="btn btn-danger btn-sm"
                     >
-                        Видалити
+                        {% translate "Delete" %}
                     </button>
+
                 </form>
+
             </td>
+
         </tr>
+
         {% endfor %}
+
     </tbody>
+
 </table>
 
 <h4>
-    Всього: {{ cart.get_total_price }} UAH
+    {% translate "Total:" %}
+    {{ cart.get_total_price }} UAH
 </h4>
 
 <div class="mt-3">
@@ -73,8 +86,9 @@
             type="submit"
             class="btn btn-secondary"
         >
-            Очистити кошик
+            {% translate "Clear cart" %}
         </button>
+
     </form>
 
     {% if user.is_authenticated %}
@@ -83,7 +97,7 @@
             href="{% url 'store:checkout' %}"
             class="btn btn-success"
         >
-            Оплатити
+            {% translate "Pay" %}
         </a>
 
     {% else %}
@@ -92,7 +106,7 @@
             href="{% url 'store:login' %}"
             class="btn btn-primary"
         >
-            Увійти для оплати
+            {% translate "Log in to pay" %}
         </a>
 
     {% endif %}
@@ -101,13 +115,13 @@
 
 {% else %}
 
-<p>Кошик порожній.</p>
+<p>{% translate "Cart is empty." %}</p>
 
 <a
     href="{% url 'store:book_list' %}"
     class="btn btn-primary"
 >
-    До книг
+    {% translate "Back to books" %}
 </a>
 
 {% endif %}

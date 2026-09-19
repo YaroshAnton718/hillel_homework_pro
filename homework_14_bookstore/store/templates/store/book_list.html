@@ -1,38 +1,45 @@
 {% extends 'store/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
-<h1>Список книг</h1>
+<h1>{% translate "Book list" %}</h1>
 
 <form method="get" class="mb-3">
+
     <input
         type="text"
         name="category"
         class="form-control"
-        placeholder="ID категорії"
+        placeholder="{% translate 'Category ID' %}"
+        value="{{ request.GET.category }}"
     >
 
     <button
         type="submit"
         class="btn btn-primary mt-2"
     >
-        Фільтр
+        {% translate "Filter" %}
     </button>
+
 </form>
 
 <table class="table table-striped">
+
     <thead>
         <tr>
-            <th>Назва</th>
-            <th>Автор</th>
-            <th>Ціна</th>
-            <th>Категорія</th>
-            <th>Дії</th>
+            <th>{% translate "Title" %}</th>
+            <th>{% translate "Author" %}</th>
+            <th>{% translate "Price" %}</th>
+            <th>{% translate "Category" %}</th>
+            <th>{% translate "Actions" %}</th>
         </tr>
     </thead>
 
     <tbody>
+
         {% for book in books %}
+
         <tr>
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
@@ -40,11 +47,12 @@
             <td>{{ book.category }}</td>
 
             <td>
+
                 <a
                     href="{% url 'store:book_detail' book.pk %}"
                     class="btn btn-info btn-sm"
                 >
-                    Деталі
+                    {% translate "Details" %}
                 </a>
 
                 <form
@@ -64,27 +72,43 @@
                         type="submit"
                         class="btn btn-success btn-sm"
                     >
-                        У кошик
+                        {% translate "Add to cart" %}
                     </button>
                 </form>
 
-                <a
-                    href="{% url 'store:book_update' book.pk %}"
-                    class="btn btn-warning btn-sm"
-                >
-                    Редагувати
-                </a>
+                {% if perms.store.manage_books %}
 
-                <a
-                    href="{% url 'store:book_delete' book.pk %}"
-                    class="btn btn-danger btn-sm"
-                >
-                    Видалити
-                </a>
+                    <a
+                        href="{% url 'store:book_update' book.pk %}"
+                        class="btn btn-warning btn-sm"
+                    >
+                        {% translate "Edit" %}
+                    </a>
+
+                    <a
+                        href="{% url 'store:book_delete' book.pk %}"
+                        class="btn btn-danger btn-sm"
+                    >
+                        {% translate "Delete" %}
+                    </a>
+
+                {% endif %}
+
             </td>
         </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="5">
+                {% translate "No books found." %}
+            </td>
+        </tr>
+
         {% endfor %}
+
     </tbody>
+
 </table>
 
 <nav>
@@ -96,7 +120,7 @@
                 class="page-link"
                 href="?page={{ page_obj.previous_page_number }}"
             >
-                Previous
+                {% translate "Previous" %}
             </a>
         </li>
         {% endif %}
@@ -113,7 +137,7 @@
                 class="page-link"
                 href="?page={{ page_obj.next_page_number }}"
             >
-                Next
+                {% translate "Next" %}
             </a>
         </li>
         {% endif %}

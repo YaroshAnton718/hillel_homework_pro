@@ -2,3 +2,9 @@ Django
 psycopg
 stripe
 django-debug-toolbar
+
+pytest
+pytest-django
+pytest-cov
+pytest-asyncio
+factory-boy

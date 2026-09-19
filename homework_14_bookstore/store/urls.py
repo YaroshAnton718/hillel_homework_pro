@@ -15,20 +15,63 @@ from .views import (
     cart_clear,
     checkout,
     checkout_success,
+    async_book_list,
+    async_book_detail,
+    async_book_count,
 )
+
 
 app_name = 'store'
 
+
 urlpatterns = [
-    path('', BookListView.as_view(), name='book_list'),
+    path(
+        '',
+        BookListView.as_view(),
+        name='book_list'
+    ),
 
-    path('register/', RegisterView.as_view(), name='register'),
+    path(
+        'async/books/',
+        async_book_list,
+        name='async_book_list'
+    ),
 
-    path('login/', BookLoginView.as_view(), name='login'),
+    path(
+        'async/books/count/',
+        async_book_count,
+        name='async_book_count'
+    ),
 
-    path('logout/', BookLogoutView.as_view(), name='logout'),
+    path(
+        'async/book/<int:pk>/',
+        async_book_detail,
+        name='async_book_detail'
+    ),
 
-    path('cart/', cart_detail, name='cart'),
+    path(
+        'register/',
+        RegisterView.as_view(),
+        name='register'
+    ),
+
+    path(
+        'login/',
+        BookLoginView.as_view(),
+        name='login'
+    ),
+
+    path(
+        'logout/',
+        BookLogoutView.as_view(),
+        name='logout'
+    ),
+
+    path(
+        'cart/',
+        cart_detail,
+        name='cart'
+    ),
 
     path(
         'cart/add/<int:pk>/',

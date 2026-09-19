@@ -1,0 +1,255 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "BookStore"
+msgstr "BookStore"
+
+msgid "Cart"
+msgstr "Cart"
+
+msgid "Add book"
+msgstr "Add book"
+
+msgid "Log out"
+msgstr "Log out"
+
+msgid "Log in"
+msgstr "Log in"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Book list"
+msgstr "Book list"
+
+msgid "Category ID"
+msgstr "Category ID"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Author"
+msgstr "Author"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Add to cart"
+msgstr "Add to cart"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "No books found."
+msgstr "No books found."
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Description:"
+msgstr "Description:"
+
+msgid "Stock:"
+msgstr "Stock:"
+
+msgid "Author:"
+msgstr "Author:"
+
+msgid "Category:"
+msgstr "Category:"
+
+msgid "Price:"
+msgstr "Price:"
+
+msgid "Book form"
+msgstr "Book form"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Delete book"
+msgstr "Delete book"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Book"
+msgstr "Book"
+
+msgid "Quantity"
+msgstr "Quantity"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Clear cart"
+msgstr "Clear cart"
+
+msgid "Pay"
+msgstr "Pay"
+
+msgid "Log in to pay"
+msgstr "Log in to pay"
+
+msgid "Cart is empty."
+msgstr "Cart is empty."
+
+msgid "Back to books"
+msgstr "Back to books"
+
+msgid "Total:"
+msgstr "Total:"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+msgid "Payment successful"
+msgstr "Payment successful"
+
+msgid "Thank you for your order."
+msgstr "Thank you for your order."
+
+msgid "Order number:"
+msgstr "Order number:"
+
+msgid "Amount:"
+msgstr "Amount:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Async book list"
+msgstr "Async book list"
+
+msgid "Book count"
+msgstr "Book count"
+
+msgid "Number of books: %(count)s"
+msgstr "Number of books: %(count)s"
+
+msgid "email address"
+msgstr "email address"
+
+msgid "name"
+msgstr "name"
+
+msgid "slug"
+msgstr "slug"
+
+msgid "category"
+msgstr "category"
+
+msgid "categories"
+msgstr "categories"
+
+msgid "title"
+msgstr "title"
+
+msgid "author"
+msgstr "author"
+
+msgid "price"
+msgstr "price"
+
+msgid "description"
+msgstr "description"
+
+msgid "stock"
+msgstr "stock"
+
+msgid "book"
+msgstr "book"
+
+msgid "books"
+msgstr "books"
+
+msgid "Can manage books"
+msgstr "Can manage books"
+
+msgid "Pending payment"
+msgstr "Pending payment"
+
+msgid "Paid"
+msgstr "Paid"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "user"
+msgstr "user"
+
+msgid "total"
+msgstr "total"
+
+msgid "status"
+msgstr "status"
+
+msgid "Stripe session ID"
+msgstr "Stripe session ID"
+
+msgid "created at"
+msgstr "created at"
+
+msgid "order"
+msgstr "order"
+
+msgid "orders"
+msgstr "orders"
+
+msgid "order item"
+msgstr "order item"
+
+msgid "order items"
+msgstr "order items"
+
+msgid "%(book)s x %(quantity)s"
+msgstr "%(book)s x %(quantity)s"
+
+msgid "Order #%(id)s"
+msgstr "Order #%(id)s"
+
+msgid "Not enough stock: %(title)s."
+msgstr "Not enough stock: %(title)s."
+
+msgid "New order #%(id)s"
+msgstr "New order #%(id)s"
+
+msgid ""
+"Thank you for your order #%(id)s.\n"
+"\n"
+"Order total: %(total)s UAH."
+msgstr ""
+"Thank you for your order #%(id)s.\n"
+"\n"
+"Order total: %(total)s UAH."
+
+msgid "Are you sure you want to delete: %(title)s?"
+msgstr "Are you sure you want to delete: %(title)s?"

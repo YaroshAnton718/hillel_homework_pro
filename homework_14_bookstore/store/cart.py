@@ -43,6 +43,7 @@ class Cart:
     def save(self):
         self.session[self.SESSION_KEY] = self.cart
         self.session.modified = True
+        self.session.save()
 
     def __iter__(self):
         book_ids = self.cart.keys()

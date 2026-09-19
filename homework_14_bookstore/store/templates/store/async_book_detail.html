@@ -21,21 +21,8 @@
 </p>
 
 <p>
-    <strong>{% translate "Description:" %}</strong>
-</p>
-
-<p>{{ book.description }}</p>
-
-<p>
     <strong>{% translate "Stock:" %}</strong>
     {{ book.stock }}
 </p>
-
-<a
-    href="{% url 'store:book_list' %}"
-    class="btn btn-secondary"
->
-    {% translate "Back" %}
-</a>
 
 {% endblock %}
