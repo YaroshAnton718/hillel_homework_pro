@@ -1,0 +1,14 @@
+{% extends 'store/base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% translate "Book count" %}</h2>
+
+<p>
+    {% blocktranslate with count=count %}
+        Number of books: {{ count }}
+    {% endblocktranslate %}
+</p>
+
+{% endblock %}

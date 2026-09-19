@@ -1,0 +1,255 @@
+msgid ""
+msgstr ""
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "BookStore"
+msgstr "BookStore"
+
+msgid "Cart"
+msgstr "Кошик"
+
+msgid "Add book"
+msgstr "Додати книгу"
+
+msgid "Log out"
+msgstr "Вийти"
+
+msgid "Log in"
+msgstr "Увійти"
+
+msgid "Register"
+msgstr "Реєстрація"
+
+msgid "Book list"
+msgstr "Список книг"
+
+msgid "Category ID"
+msgstr "ID категорії"
+
+msgid "Filter"
+msgstr "Фільтр"
+
+msgid "Title"
+msgstr "Назва"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Price"
+msgstr "Ціна"
+
+msgid "Category"
+msgstr "Категорія"
+
+msgid "Actions"
+msgstr "Дії"
+
+msgid "Details"
+msgstr "Деталі"
+
+msgid "Add to cart"
+msgstr "У кошик"
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "Delete"
+msgstr "Видалити"
+
+msgid "No books found."
+msgstr "Книг не знайдено."
+
+msgid "Previous"
+msgstr "Попередня"
+
+msgid "Next"
+msgstr "Наступна"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Description:"
+msgstr "Опис:"
+
+msgid "Stock:"
+msgstr "Кількість:"
+
+msgid "Author:"
+msgstr "Автор:"
+
+msgid "Category:"
+msgstr "Категорія:"
+
+msgid "Price:"
+msgstr "Ціна:"
+
+msgid "Book form"
+msgstr "Форма книги"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Delete book"
+msgstr "Видалення книги"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Book"
+msgstr "Книга"
+
+msgid "Quantity"
+msgstr "Кількість"
+
+msgid "Total"
+msgstr "Сума"
+
+msgid "Clear cart"
+msgstr "Очистити кошик"
+
+msgid "Pay"
+msgstr "Оплатити"
+
+msgid "Log in to pay"
+msgstr "Увійти для оплати"
+
+msgid "Cart is empty."
+msgstr "Кошик порожній."
+
+msgid "Back to books"
+msgstr "До книг"
+
+msgid "Total:"
+msgstr "Всього:"
+
+msgid "Don't have an account?"
+msgstr "Немає акаунта?"
+
+msgid "Already have an account?"
+msgstr "Вже є акаунт?"
+
+msgid "Payment successful"
+msgstr "Оплата успішна"
+
+msgid "Thank you for your order."
+msgstr "Дякуємо за замовлення."
+
+msgid "Order number:"
+msgstr "Номер замовлення:"
+
+msgid "Amount:"
+msgstr "Сума:"
+
+msgid "Status:"
+msgstr "Статус:"
+
+msgid "Async book list"
+msgstr "Асинхронний список книг"
+
+msgid "Book count"
+msgstr "Кількість книг"
+
+msgid "Number of books: %(count)s"
+msgstr "Кількість книг: %(count)s"
+
+msgid "email address"
+msgstr "електронна адреса"
+
+msgid "name"
+msgstr "назва"
+
+msgid "slug"
+msgstr "slug"
+
+msgid "category"
+msgstr "категорія"
+
+msgid "categories"
+msgstr "категорії"
+
+msgid "title"
+msgstr "назва"
+
+msgid "author"
+msgstr "автор"
+
+msgid "price"
+msgstr "ціна"
+
+msgid "description"
+msgstr "опис"
+
+msgid "stock"
+msgstr "кількість"
+
+msgid "book"
+msgstr "книга"
+
+msgid "books"
+msgstr "книги"
+
+msgid "Can manage books"
+msgstr "Може керувати книгами"
+
+msgid "Pending payment"
+msgstr "Очікує оплати"
+
+msgid "Paid"
+msgstr "Оплачено"
+
+msgid "Cancelled"
+msgstr "Скасовано"
+
+msgid "user"
+msgstr "користувач"
+
+msgid "total"
+msgstr "сума"
+
+msgid "status"
+msgstr "статус"
+
+msgid "Stripe session ID"
+msgstr "ID сесії Stripe"
+
+msgid "created at"
+msgstr "створено"
+
+msgid "order"
+msgstr "замовлення"
+
+msgid "orders"
+msgstr "замовлення"
+
+msgid "order item"
+msgstr "позиція замовлення"
+
+msgid "order items"
+msgstr "позиції замовлення"
+
+msgid "%(book)s x %(quantity)s"
+msgstr "%(book)s x %(quantity)s"
+
+msgid "Order #%(id)s"
+msgstr "Замовлення #%(id)s"
+
+msgid "Not enough stock: %(title)s."
+msgstr "Недостатньо товару: %(title)s."
+
+msgid "New order #%(id)s"
+msgstr "Нове замовлення №%(id)s"
+
+msgid ""
+"Thank you for your order #%(id)s.\n"
+"\n"
+"Order total: %(total)s UAH."
+msgstr ""
+"Дякуємо за замовлення №%(id)s.\n"
+"\n"
+"Сума замовлення: %(total)s UAH."
+
+msgid "Are you sure you want to delete: %(title)s?"
+msgstr "Ви впевнені, що хочете видалити: %(title)s?"

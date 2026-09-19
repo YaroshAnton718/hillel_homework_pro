@@ -2,6 +2,8 @@ from decimal import Decimal
 
 import stripe
 
+from asgiref.sync import sync_to_async
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import (
@@ -14,6 +16,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     ListView,
     DetailView,
@@ -81,7 +84,7 @@ class BookCreateView(
         'author',
         'price',
         'description',
-        'stock'
+        'stock',
     ]
 
     template_name = 'store/book_form.html'
@@ -102,7 +105,7 @@ class BookUpdateView(
         'author',
         'price',
         'description',
-        'stock'
+        'stock',
     ]
 
     template_name = 'store/book_form.html'
@@ -121,6 +124,52 @@ class BookDeleteView(
     success_url = reverse_lazy('store:book_list')
 
 
+async def async_book_list(request):
+    books = []
+
+    async for book in (
+        Book.objects
+        .select_related('category')
+        .order_by('id')
+        .aiterator()
+    ):
+        books.append(book)
+
+    return await sync_to_async(render)(
+        request,
+        'store/async_book_list.html',
+        {
+            'books': books,
+        }
+    )
+
+
+async def async_book_detail(request, pk):
+    book = await Book.objects.select_related(
+        'category'
+    ).aget(pk=pk)
+
+    return await sync_to_async(render)(
+        request,
+        'store/async_book_detail.html',
+        {
+            'book': book,
+        }
+    )
+
+
+async def async_book_count(request):
+    count = await Book.objects.acount()
+
+    return await sync_to_async(render)(
+        request,
+        'store/async_book_count.html',
+        {
+            'count': count,
+        }
+    )
+
+
 def cart_detail(request):
     cart = Cart(request)
 
@@ -137,7 +186,12 @@ def cart_add(request, pk):
     book = get_object_or_404(Book, pk=pk)
 
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
+        try:
+            quantity = int(
+                request.POST.get('quantity', 1)
+            )
+        except (TypeError, ValueError):
+            quantity = 1
 
         if quantity > 0:
             cart = Cart(request)
@@ -171,7 +225,7 @@ def checkout(request):
     if len(cart) == 0:
         messages.error(
             request,
-            'Кошик порожній.'
+            _('Cart is empty.')
         )
         return redirect('store:cart')
 
@@ -179,7 +233,11 @@ def checkout(request):
         if item['quantity'] > item['book'].stock:
             messages.error(
                 request,
-                f'Недостатньо товару: {item["book"].title}.'
+                _(
+                    'Not enough stock: %(title)s.'
+                ) % {
+                    'title': item['book'].title
+                }
             )
             return redirect('store:cart')
 
@@ -201,11 +259,16 @@ def checkout(request):
             )
 
     send_mail(
-        subject=f'Нове замовлення #{order.pk}',
-        message=(
-            f'Дякуємо за замовлення #{order.pk}.\n\n'
-            f'Сума замовлення: {order.total} UAH.'
-        ),
+        subject=_('New order #%(id)s') % {
+            'id': order.pk
+        },
+        message=_(
+            'Thank you for your order #%(id)s.\n\n'
+            'Order total: %(total)s UAH.'
+        ) % {
+            'id': order.pk,
+            'total': order.total,
+        },
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[order.email],
         fail_silently=False,
@@ -233,7 +296,8 @@ def checkout(request):
         customer_email=order.email,
         success_url=(
             f'{settings.SITE_URL}'
-            f'/checkout/success/?session_id={{CHECKOUT_SESSION_ID}}'
+            f'/checkout/success/'
+            f'?session_id={{CHECKOUT_SESSION_ID}}'
         ),
         cancel_url=f'{settings.SITE_URL}/cart/',
         metadata={
@@ -242,6 +306,7 @@ def checkout(request):
     )
 
     order.stripe_session_id = checkout_session.id
+
     order.save(
         update_fields=['stripe_session_id']
     )
@@ -252,6 +317,7 @@ def checkout(request):
     )
 
 
+@login_required
 def checkout_success(request):
     session_id = request.GET.get('session_id')
 
@@ -262,7 +328,11 @@ def checkout_success(request):
         session_id
     )
 
-    order_id = checkout_session.metadata.to_dict().get('order_id')
+    order_id = (
+        checkout_session.metadata
+        .to_dict()
+        .get('order_id')
+    )
 
     if not order_id:
         return redirect('store:book_list')
@@ -279,12 +349,14 @@ def checkout_success(request):
     ):
         with transaction.atomic():
             order.status = Order.STATUS_PAID
+
             order.save(
                 update_fields=['status']
             )
 
             for item in order.items.select_related('book'):
                 item.book.stock -= item.quantity
+
                 item.book.save(
                     update_fields=['stock']
                 )

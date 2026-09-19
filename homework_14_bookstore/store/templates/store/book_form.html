@@ -1,10 +1,12 @@
 {% extends 'store/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
-<h2>Форма книги</h2>
+<h2>{% translate "Book form" %}</h2>
 
 <form method="post">
+
     {% csrf_token %}
 
     {{ form.as_p }}
@@ -13,8 +15,9 @@
         type="submit"
         class="btn btn-success"
     >
-        Зберегти
+        {% translate "Save" %}
     </button>
+
 </form>
 
 {% endblock %}

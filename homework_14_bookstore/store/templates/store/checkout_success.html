@@ -1,25 +1,26 @@
 {% extends 'store/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
-<h2>Оплата успішна</h2>
+<h2>{% translate "Payment successful" %}</h2>
 
 <p>
-    Дякуємо за замовлення.
+    {% translate "Thank you for your order." %}
 </p>
 
 <p>
-    Номер замовлення:
+    {% translate "Order number:" %}
     <strong>#{{ order.pk }}</strong>
 </p>
 
 <p>
-    Сума:
+    {% translate "Amount:" %}
     <strong>{{ order.total }} UAH</strong>
 </p>
 
 <p>
-    Статус:
+    {% translate "Status:" %}
     <strong>{{ order.get_status_display }}</strong>
 </p>
 
@@ -27,7 +28,7 @@
     href="{% url 'store:book_list' %}"
     class="btn btn-primary"
 >
-    До книг
+    {% translate "Back to books" %}
 </a>
 
 {% endblock %}
