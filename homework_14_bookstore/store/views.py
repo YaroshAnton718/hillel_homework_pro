@@ -34,20 +34,26 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class RegisterView(CreateView):
+    """Register a new user account."""
+
     form_class = RegisterForm
     template_name = 'store/register.html'
     success_url = reverse_lazy('store:login')
 
 
 class BookLoginView(LoginView):
+    """Authenticate a user and log them into the bookstore."""
+
     template_name = 'store/login.html'
 
 
 class BookLogoutView(LogoutView):
-    pass
+    """Log the current user out of the bookstore."""
 
 
 class BookListView(ListView):
+    """Display a paginated list of books with optional category filtering."""
+
     model = Book
     template_name = 'store/book_list.html'
     context_object_name = 'books'
@@ -65,6 +71,8 @@ class BookListView(ListView):
 
 
 class BookDetailView(DetailView):
+    """Display detailed information about a single book."""
+
     model = Book
     template_name = 'store/book_detail.html'
     context_object_name = 'book'
@@ -75,6 +83,8 @@ class BookCreateView(
     PermissionRequiredMixin,
     CreateView
 ):
+    """Allow authorized users to create a new book."""
+
     model = Book
     permission_required = 'store.manage_books'
 
@@ -96,6 +106,8 @@ class BookUpdateView(
     PermissionRequiredMixin,
     UpdateView
 ):
+    """Allow authorized users to update an existing book."""
+
     model = Book
     permission_required = 'store.manage_books'
 
@@ -117,6 +129,8 @@ class BookDeleteView(
     PermissionRequiredMixin,
     DeleteView
 ):
+    """Allow authorized users to delete an existing book."""
+
     model = Book
     permission_required = 'store.manage_books'
 
@@ -125,6 +139,8 @@ class BookDeleteView(
 
 
 async def async_book_list(request):
+    """Return the book list using asynchronous database iteration."""
+
     books = []
 
     async for book in (
@@ -145,6 +161,8 @@ async def async_book_list(request):
 
 
 async def async_book_detail(request, pk):
+    """Return details of a single book using an asynchronous query."""
+
     book = await Book.objects.select_related(
         'category'
     ).aget(pk=pk)
@@ -159,6 +177,8 @@ async def async_book_detail(request, pk):
 
 
 async def async_book_count(request):
+    """Return the total number of books using an asynchronous query."""
+
     count = await Book.objects.acount()
 
     return await sync_to_async(render)(
@@ -171,6 +191,8 @@ async def async_book_count(request):
 
 
 def cart_detail(request):
+    """Display the current shopping cart."""
+
     cart = Cart(request)
 
     return render(
@@ -183,6 +205,8 @@ def cart_detail(request):
 
 
 def cart_add(request, pk):
+    """Add a selected book and quantity to the shopping cart."""
+
     book = get_object_or_404(Book, pk=pk)
 
     if request.method == 'POST':
@@ -201,6 +225,8 @@ def cart_add(request, pk):
 
 
 def cart_remove(request, pk):
+    """Remove a selected book from the shopping cart."""
+
     book = get_object_or_404(Book, pk=pk)
 
     if request.method == 'POST':
@@ -211,6 +237,8 @@ def cart_remove(request, pk):
 
 
 def cart_clear(request):
+    """Clear all items from the shopping cart."""
+
     if request.method == 'POST':
         cart = Cart(request)
         cart.clear()
@@ -220,6 +248,8 @@ def cart_clear(request):
 
 @login_required
 def checkout(request):
+    """Create an order and redirect the authenticated user to Stripe Checkout."""
+
     cart = Cart(request)
 
     if len(cart) == 0:
@@ -274,10 +304,8 @@ def checkout(request):
         fail_silently=False,
     )
 
-    line_items = []
-
-    for item in cart:
-        line_items.append({
+    line_items = [
+        {
             'price_data': {
                 'currency': settings.STRIPE_CURRENCY,
                 'product_data': {
@@ -288,7 +316,9 @@ def checkout(request):
                 ),
             },
             'quantity': item['quantity'],
-        })
+        }
+        for item in cart
+    ]
 
     checkout_session = stripe.checkout.Session.create(
         mode='payment',
@@ -319,6 +349,8 @@ def checkout(request):
 
 @login_required
 def checkout_success(request):
+    """Confirm a successful Stripe payment and update the related order."""
+
     session_id = request.GET.get('session_id')
 
     if not session_id:
@@ -337,31 +369,36 @@ def checkout_success(request):
     if not order_id:
         return redirect('store:book_list')
 
-    order = get_object_or_404(
-        Order,
-        pk=order_id,
-        user=request.user,
-    )
-
-    if (
-        checkout_session.payment_status == 'paid'
-        and order.status != Order.STATUS_PAID
-    ):
+    if checkout_session.payment_status == 'paid':
         with transaction.atomic():
-            order.status = Order.STATUS_PAID
-
-            order.save(
-                update_fields=['status']
+            order = get_object_or_404(
+                Order.objects.select_for_update(),
+                pk=order_id,
+                user=request.user,
             )
 
-            for item in order.items.select_related('book'):
-                item.book.stock -= item.quantity
+            if order.status != Order.STATUS_PAID:
+                order.status = Order.STATUS_PAID
 
-                item.book.save(
-                    update_fields=['stock']
+                order.save(
+                    update_fields=['status']
                 )
 
-        Cart(request).clear()
+                for item in order.items.select_related('book'):
+                    item.book.stock -= item.quantity
+
+                    item.book.save(
+                        update_fields=['stock']
+                    )
+
+                Cart(request).clear()
+
+    else:
+        order = get_object_or_404(
+            Order,
+            pk=order_id,
+            user=request.user,
+        )
 
     return render(
         request,
