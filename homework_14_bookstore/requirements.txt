@@ -3,6 +3,12 @@ psycopg
 stripe
 django-debug-toolbar
 
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+drf-spectacular
+django-cors-headers
+
 pytest
 pytest-django
 pytest-cov
