@@ -1,6 +1,11 @@
 import os
 from pathlib import Path
 
+import sentry_sdk
+from celery.schedules import crontab
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,9 +18,17 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'web',
+    host.strip()
+    for host in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,web'
+    ).split(',')
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 
@@ -33,7 +46,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework',
 
-    'store',
+    'store.apps.StoreConfig',
 ]
 
 
@@ -206,6 +219,7 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'BookStore <noreply@example.com>'
 )
 
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -231,12 +245,14 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'BookStore API',
     'DESCRIPTION': 'REST API for BookStore.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
@@ -246,3 +262,83 @@ CORS_ALLOWED_ORIGINS = [
     ).split(',')
     if origin.strip()
 ]
+
+
+# Redis cache
+
+REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
+REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
+
+REDIS_CACHE_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/1'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': REDIS_CACHE_URL,
+        'TIMEOUT': 300,
+        'KEY_PREFIX': 'bookstore',
+    }
+}
+
+
+# Celery
+
+CELERY_BROKER_URL = (
+    f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+)
+
+CELERY_RESULT_BACKEND = (
+    f'redis://{REDIS_HOST}:{REDIS_PORT}/2'
+)
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ENABLE_UTC = True
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 300
+
+CELERY_BEAT_SCHEDULE = {
+    'generate-daily-report': {
+        'task': 'store.tasks.generate_daily_report',
+        'schedule': crontab(hour=1, minute=0),
+    },
+
+    'cleanup-expired-sessions': {
+        'task': 'store.tasks.cleanup_expired_sessions',
+        'schedule': crontab(hour=3, minute=0),
+    },
+}
+
+
+# Reports
+
+REPORTS_DIR = BASE_DIR / 'reports'
+
+
+# Sentry
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+        ],
+        traces_sample_rate=float(
+            os.environ.get(
+                'SENTRY_TRACES_SAMPLE_RATE',
+                '0.0'
+            )
+        ),
+        environment=os.environ.get(
+            'SENTRY_ENVIRONMENT',
+            'development'
+        ),
+        send_default_pii=False,
+    )

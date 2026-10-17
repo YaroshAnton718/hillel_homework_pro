@@ -316,7 +316,7 @@ def test_checkout_uses_stripe_and_email(
     )()
 
     with patch(
-        'store.views.send_mail'
+        'store.views.send_order_email.delay'
     ) as email_mock, patch(
         'store.views.stripe.checkout.Session.create',
         return_value=fake_session

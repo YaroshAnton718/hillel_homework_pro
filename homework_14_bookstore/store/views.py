@@ -1,3 +1,4 @@
+
 from decimal import Decimal
 
 import stripe
@@ -12,11 +13,12 @@ from django.contrib.auth.mixins import (
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
-from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import (
     ListView,
     DetailView,
@@ -25,9 +27,15 @@ from django.views.generic import (
     DeleteView,
 )
 
+from .cache_utils import (
+    CACHE_TIMEOUT,
+    get_books_cache_version,
+    get_cached_book,
+)
 from .cart import Cart
 from .forms import RegisterForm
 from .models import Book, Order, OrderItem
+from .tasks import send_order_email
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -59,6 +67,29 @@ class BookListView(ListView):
     context_object_name = 'books'
     paginate_by = 5
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return super().dispatch(
+                request,
+                *args,
+                **kwargs
+            )
+
+        cache_version = get_books_cache_version()
+
+        cached_view = cache_page(
+            CACHE_TIMEOUT,
+            key_prefix=f'book_list_{cache_version}'
+        )(
+            vary_on_cookie(super().dispatch)
+        )
+
+        return cached_view(
+            request,
+            *args,
+            **kwargs
+        )
+
     def get_queryset(self):
         queryset = Book.objects.select_related('category')
 
@@ -76,6 +107,20 @@ class BookDetailView(DetailView):
     model = Book
     template_name = 'store/book_detail.html'
     context_object_name = 'book'
+
+    def get_object(self, queryset=None):
+        return get_cached_book(
+            self.kwargs['pk']
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['book_cache_version'] = (
+            get_books_cache_version()
+        )
+
+        return context
 
 
 class BookCreateView(
@@ -288,22 +333,6 @@ def checkout(request):
                 price=item['price'],
             )
 
-    send_mail(
-        subject=_('New order #%(id)s') % {
-            'id': order.pk
-        },
-        message=_(
-            'Thank you for your order #%(id)s.\n\n'
-            'Order total: %(total)s UAH.'
-        ) % {
-            'id': order.pk,
-            'total': order.total,
-        },
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[order.email],
-        fail_silently=False,
-    )
-
     line_items = [
         {
             'price_data': {
@@ -340,6 +369,8 @@ def checkout(request):
     order.save(
         update_fields=['stripe_session_id']
     )
+
+    send_order_email.delay(order.pk)
 
     return redirect(
         checkout_session.url,
