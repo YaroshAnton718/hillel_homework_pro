@@ -172,7 +172,7 @@ def test_checkout_creates_order(client):
     )()
 
     with patch(
-        'store.views.send_mail'
+        'store.views.send_order_email.delay'
     ), patch(
         'store.views.stripe.checkout.Session.create',
         return_value=fake_session
@@ -213,7 +213,7 @@ def test_checkout_sends_email(client):
     )()
 
     with patch(
-        'store.views.send_mail'
+        'store.views.send_order_email.delay'
     ) as email_mock, patch(
         'store.views.stripe.checkout.Session.create',
         return_value=fake_session
@@ -246,7 +246,7 @@ def test_checkout_calls_stripe(client):
     )()
 
     with patch(
-        'store.views.send_mail'
+        'store.views.send_order_email.delay'
     ), patch(
         'store.views.stripe.checkout.Session.create',
         return_value=fake_session

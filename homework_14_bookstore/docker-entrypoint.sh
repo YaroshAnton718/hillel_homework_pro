@@ -30,6 +30,6 @@ python manage.py loaddata data.json
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "Starting Django..."
+echo "Starting Gunicorn..."
 
-exec python manage.py runserver 0.0.0.0:8000
+exec "$@"

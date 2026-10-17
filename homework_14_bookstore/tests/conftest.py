@@ -1,10 +1,15 @@
 import pytest
-
+from django.core.cache import cache
 from .factories import (
     BookFactory,
     CategoryFactory,
     UserFactory,
 )
+
+
+@pytest.fixture(autouse=True)
+def clear_test_cache():
+    cache.clear()
 
 
 @pytest.fixture

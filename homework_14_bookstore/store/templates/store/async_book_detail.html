@@ -1,9 +1,12 @@
 {% extends 'store/base.html' %}
 {% load i18n %}
+{% load cache %}
 
 {% block content %}
 
 <h2>{{ book.title }}</h2>
+
+{% cache 300 book_info book.pk book_cache_version %}
 
 <p>
     <strong>{% translate "Author:" %}</strong>
@@ -21,8 +24,23 @@
 </p>
 
 <p>
+    <strong>{% translate "Description:" %}</strong>
+</p>
+
+<p>{{ book.description }}</p>
+
+<p>
     <strong>{% translate "Stock:" %}</strong>
     {{ book.stock }}
 </p>
+
+{% endcache %}
+
+<a
+    href="{% url 'store:book_list' %}"
+    class="btn btn-secondary"
+>
+    {% translate "Back" %}
+</a>
 
 {% endblock %}

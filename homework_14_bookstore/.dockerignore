@@ -17,3 +17,6 @@ env
 
 db.sqlite3
 *.sqlite3
+
+reports/
+celerybeat-schedule*
