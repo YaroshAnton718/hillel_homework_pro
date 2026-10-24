@@ -1,4 +1,3 @@
-
 from decimal import Decimal
 
 import stripe
@@ -37,7 +36,6 @@ from .forms import RegisterForm
 from .models import Book, Order, OrderItem
 from .tasks import send_order_email
 
-
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -69,26 +67,15 @@ class BookListView(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return super().dispatch(
-                request,
-                *args,
-                **kwargs
-            )
+            return super().dispatch(request, *args, **kwargs)
 
         cache_version = get_books_cache_version()
 
         cached_view = cache_page(
-            CACHE_TIMEOUT,
-            key_prefix=f'book_list_{cache_version}'
-        )(
-            vary_on_cookie(super().dispatch)
-        )
+            CACHE_TIMEOUT, key_prefix=f'book_list_{cache_version}'
+        )(vary_on_cookie(super().dispatch))
 
-        return cached_view(
-            request,
-            *args,
-            **kwargs
-        )
+        return cached_view(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = Book.objects.select_related('category')
@@ -109,25 +96,17 @@ class BookDetailView(DetailView):
     context_object_name = 'book'
 
     def get_object(self, queryset=None):
-        return get_cached_book(
-            self.kwargs['pk']
-        )
+        return get_cached_book(self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['book_cache_version'] = (
-            get_books_cache_version()
-        )
+        context['book_cache_version'] = get_books_cache_version()
 
         return context
 
 
-class BookCreateView(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    CreateView
-):
+class BookCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Allow authorized users to create a new book."""
 
     model = Book
@@ -146,11 +125,7 @@ class BookCreateView(
     success_url = reverse_lazy('store:book_list')
 
 
-class BookUpdateView(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    UpdateView
-):
+class BookUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Allow authorized users to update an existing book."""
 
     model = Book
@@ -169,11 +144,7 @@ class BookUpdateView(
     success_url = reverse_lazy('store:book_list')
 
 
-class BookDeleteView(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    DeleteView
-):
+class BookDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Allow authorized users to delete an existing book."""
 
     model = Book
@@ -189,10 +160,7 @@ async def async_book_list(request):
     books = []
 
     async for book in (
-        Book.objects
-        .select_related('category')
-        .order_by('id')
-        .aiterator()
+        Book.objects.select_related('category').order_by('id').aiterator()
     ):
         books.append(book)
 
@@ -201,23 +169,21 @@ async def async_book_list(request):
         'store/async_book_list.html',
         {
             'books': books,
-        }
+        },
     )
 
 
 async def async_book_detail(request, pk):
     """Return details of a single book using an asynchronous query."""
 
-    book = await Book.objects.select_related(
-        'category'
-    ).aget(pk=pk)
+    book = await Book.objects.select_related('category').aget(pk=pk)
 
     return await sync_to_async(render)(
         request,
         'store/async_book_detail.html',
         {
             'book': book,
-        }
+        },
     )
 
 
@@ -231,7 +197,7 @@ async def async_book_count(request):
         'store/async_book_count.html',
         {
             'count': count,
-        }
+        },
     )
 
 
@@ -245,7 +211,7 @@ def cart_detail(request):
         'store/cart.html',
         {
             'cart': cart,
-        }
+        },
     )
 
 
@@ -256,9 +222,7 @@ def cart_add(request, pk):
 
     if request.method == 'POST':
         try:
-            quantity = int(
-                request.POST.get('quantity', 1)
-            )
+            quantity = int(request.POST.get('quantity', 1))
         except (TypeError, ValueError):
             quantity = 1
 
@@ -298,21 +262,14 @@ def checkout(request):
     cart = Cart(request)
 
     if len(cart) == 0:
-        messages.error(
-            request,
-            _('Cart is empty.')
-        )
+        messages.error(request, _('Cart is empty.'))
         return redirect('store:cart')
 
     for item in cart:
         if item['quantity'] > item['book'].stock:
             messages.error(
                 request,
-                _(
-                    'Not enough stock: %(title)s.'
-                ) % {
-                    'title': item['book'].title
-                }
+                _('Not enough stock: %(title)s.') % {'title': item['book'].title},
             )
             return redirect('store:cart')
 
@@ -340,9 +297,7 @@ def checkout(request):
                 'product_data': {
                     'name': item['book'].title,
                 },
-                'unit_amount': int(
-                    item['price'] * Decimal('100')
-                ),
+                'unit_amount': int(item['price'] * Decimal('100')),
             },
             'quantity': item['quantity'],
         }
@@ -366,9 +321,7 @@ def checkout(request):
 
     order.stripe_session_id = checkout_session.id
 
-    order.save(
-        update_fields=['stripe_session_id']
-    )
+    order.save(update_fields=['stripe_session_id'])
 
     send_order_email.delay(order.pk)
 
@@ -387,15 +340,9 @@ def checkout_success(request):
     if not session_id:
         return redirect('store:book_list')
 
-    checkout_session = stripe.checkout.Session.retrieve(
-        session_id
-    )
+    checkout_session = stripe.checkout.Session.retrieve(session_id)
 
-    order_id = (
-        checkout_session.metadata
-        .to_dict()
-        .get('order_id')
-    )
+    order_id = checkout_session.metadata.to_dict().get('order_id')
 
     if not order_id:
         return redirect('store:book_list')
@@ -411,16 +358,12 @@ def checkout_success(request):
             if order.status != Order.STATUS_PAID:
                 order.status = Order.STATUS_PAID
 
-                order.save(
-                    update_fields=['status']
-                )
+                order.save(update_fields=['status'])
 
                 for item in order.items.select_related('book'):
                     item.book.stock -= item.quantity
 
-                    item.book.save(
-                        update_fields=['stock']
-                    )
+                    item.book.save(update_fields=['stock'])
 
                 Cart(request).clear()
 
@@ -436,5 +379,5 @@ def checkout_success(request):
         'store/checkout_success.html',
         {
             'order': order,
-        }
+        },
     )

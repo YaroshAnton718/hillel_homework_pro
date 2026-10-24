@@ -18,7 +18,6 @@ from .api_views import (
     OrderViewSet,
 )
 
-
 router = DefaultRouter()
 router.register('books', BookViewSet, basename='book')
 router.register('categories', CategoryViewSet, basename='category')
@@ -44,9 +43,7 @@ urlpatterns = [
     ),
     path(
         'schema/',
-        SpectacularAPIView.as_view(
-            permission_classes=[AllowAny]
-        ),
+        SpectacularAPIView.as_view(permission_classes=[AllowAny]),
         name='schema',
     ),
     path(

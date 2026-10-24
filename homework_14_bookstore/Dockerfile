@@ -21,4 +21,4 @@ RUN python manage.py compilemessages
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 
-CMD ["gunicorn", "bookstore.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-"]
+CMD ["gunicorn", "bookstore.wsgi:application", "-c", "gunicorn.conf.py"]

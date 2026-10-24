@@ -83,18 +83,14 @@ def test_book_cache_version_changes():
 def test_view_cache_invalidation(client):
     BookFactory(title='First Book')
 
-    first_response = client.get(
-        reverse('store:book_list')
-    )
+    first_response = client.get(reverse('store:book_list'))
 
     assert first_response.status_code == 200
     assert b'First Book' in first_response.content
 
     BookFactory(title='Second Book')
 
-    second_response = client.get(
-        reverse('store:book_list')
-    )
+    second_response = client.get(reverse('store:book_list'))
 
     assert second_response.status_code == 200
     assert b'Second Book' in second_response.content
@@ -104,10 +100,7 @@ def test_view_cache_invalidation(client):
 def test_template_fragment_invalidation(client):
     book = BookFactory(description='Old description')
 
-    url = reverse(
-        'store:book_detail',
-        args=[book.pk]
-    )
+    url = reverse('store:book_detail', args=[book.pk])
 
     response = client.get(url)
 
@@ -135,10 +128,7 @@ def test_send_order_email_task():
 
 @pytest.mark.django_db
 def test_generate_daily_report_task(tmp_path):
-    order = OrderFactory(
-        status=Order.STATUS_PAID,
-        total=Decimal('250.00')
-    )
+    order = OrderFactory(status=Order.STATUS_PAID, total=Decimal('250.00'))
 
     Order.objects.filter(pk=order.pk).update(
         created_at=timezone.now() - timedelta(days=1)

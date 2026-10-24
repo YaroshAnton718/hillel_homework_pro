@@ -20,13 +20,9 @@ def send_order_email(order_id):
     order = Order.objects.get(pk=order_id)
 
     send_mail(
-        subject=_('New order #%(id)s') % {
-            'id': order.pk
-        },
-        message=_(
-            'Thank you for your order #%(id)s.\n\n'
-            'Order total: %(total)s UAH.'
-        ) % {
+        subject=_('New order #%(id)s') % {'id': order.pk},
+        message=_('Thank you for your order #%(id)s.\n\n' 'Order total: %(total)s UAH.')
+        % {
             'id': order.pk,
             'total': order.total,
         },
@@ -43,8 +39,7 @@ def generate_daily_report():
     report_date = timezone.localdate() - timedelta(days=1)
 
     statistics = Order.objects.filter(
-        status=Order.STATUS_PAID,
-        created_at__date=report_date
+        status=Order.STATUS_PAID, created_at__date=report_date
     ).aggregate(
         paid_orders=Count('id'),
         revenue=Sum('total'),
@@ -55,34 +50,28 @@ def generate_daily_report():
 
     reports_dir = settings.REPORTS_DIR
 
-    reports_dir.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+    reports_dir.mkdir(parents=True, exist_ok=True)
 
-    report_path = (
-        reports_dir
-        / f'daily_report_{report_date.isoformat()}.csv'
-    )
+    report_path = reports_dir / f'daily_report_{report_date.isoformat()}.csv'
 
-    with report_path.open(
-        mode='w',
-        newline='',
-        encoding='utf-8-sig'
-    ) as file:
+    with report_path.open(mode='w', newline='', encoding='utf-8-sig') as file:
         writer = csv.writer(file)
 
-        writer.writerow([
-            'Date',
-            'Paid orders',
-            'Revenue UAH',
-        ])
+        writer.writerow(
+            [
+                'Date',
+                'Paid orders',
+                'Revenue UAH',
+            ]
+        )
 
-        writer.writerow([
-            report_date.isoformat(),
-            paid_orders,
-            revenue,
-        ])
+        writer.writerow(
+            [
+                report_date.isoformat(),
+                paid_orders,
+                revenue,
+            ]
+        )
 
     return str(report_path)
 

@@ -32,18 +32,11 @@ class AdminWritePermissionMixin:
         else:
             permission_classes = [IsAuthenticated]
 
-        return [
-            permission()
-            for permission in permission_classes
-        ]
+        return [permission() for permission in permission_classes]
 
 
 class BookViewSet(AdminWritePermissionMixin, viewsets.ModelViewSet):
-    queryset = (
-        Book.objects
-        .select_related('category')
-        .order_by('id')
-    )
+    queryset = Book.objects.select_related('category').order_by('id')
     serializer_class = BookSerializer
     filterset_fields = (
         'category',
@@ -52,15 +45,8 @@ class BookViewSet(AdminWritePermissionMixin, viewsets.ModelViewSet):
     )
 
 
-class CategoryViewSet(
-    AdminWritePermissionMixin,
-    viewsets.ModelViewSet
-):
-    queryset = (
-        Category.objects
-        .prefetch_related('books')
-        .order_by('id')
-    )
+class CategoryViewSet(AdminWritePermissionMixin, viewsets.ModelViewSet):
+    queryset = Category.objects.prefetch_related('books').order_by('id')
     serializer_class = CategorySerializer
     filterset_fields = (
         'name',
@@ -80,8 +66,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = (
-            Order.objects
-            .select_related('user')
+            Order.objects.select_related('user')
             .prefetch_related('items__book')
             .order_by('-created_at')
         )
@@ -157,11 +142,7 @@ class CartViewSet(viewsets.GenericViewSet):
         cart = Cart(request)
         cart.add(book, quantity)
 
-        item = next(
-            item
-            for item in cart
-            if item['book'].pk == book.pk
-        )
+        item = next(item for item in cart if item['book'].pk == book.pk)
 
         output_serializer = CartItemSerializer(
             item,

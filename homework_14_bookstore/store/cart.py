@@ -48,14 +48,9 @@ class Cart:
     def __iter__(self):
         book_ids = self.cart.keys()
 
-        books = Book.objects.filter(
-            id__in=book_ids
-        ).select_related('category')
+        books = Book.objects.filter(id__in=book_ids).select_related('category')
 
-        books_by_id = {
-            str(book.id): book
-            for book in books
-        }
+        books_by_id = {str(book.id): book for book in books}
 
         for book_id, quantity in self.cart.items():
             book = books_by_id.get(book_id)
@@ -74,7 +69,4 @@ class Cart:
         return sum(self.cart.values())
 
     def get_total_price(self):
-        return sum(
-            item['total_price']
-            for item in self
-        )
+        return sum(item['total_price'] for item in self)

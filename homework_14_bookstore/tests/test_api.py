@@ -64,9 +64,7 @@ def test_authenticated_user_can_list_books(auth_api_client):
 def test_book_detail_contains_nested_category(auth_api_client):
     book = BookFactory()
 
-    response = auth_api_client.get(
-        reverse('book-detail', args=[book.pk])
-    )
+    response = auth_api_client.get(reverse('book-detail', args=[book.pk]))
 
     assert response.status_code == 200
     assert response.data['category']['id'] == book.category_id
@@ -176,9 +174,7 @@ def test_admin_can_update_book(admin_api_client):
 def test_admin_can_delete_book(admin_api_client):
     book = BookFactory()
 
-    response = admin_api_client.delete(
-        reverse('book-detail', args=[book.pk])
-    )
+    response = admin_api_client.delete(reverse('book-detail', args=[book.pk]))
 
     assert response.status_code == 204
     assert not Book.objects.filter(pk=book.pk).exists()
@@ -206,9 +202,7 @@ def test_category_detail_contains_nested_books(auth_api_client):
     category = CategoryFactory()
     book = BookFactory(category=category)
 
-    response = auth_api_client.get(
-        reverse('category-detail', args=[category.pk])
-    )
+    response = auth_api_client.get(reverse('category-detail', args=[category.pk]))
 
     assert response.status_code == 200
     assert response.data['books'][0]['id'] == book.pk
@@ -292,9 +286,7 @@ def test_order_detail_contains_nested_items(
     order = OrderFactory(user=user)
     item = OrderItemFactory(order=order)
 
-    response = auth_api_client.get(
-        reverse('order-detail', args=[order.pk])
-    )
+    response = auth_api_client.get(reverse('order-detail', args=[order.pk]))
 
     assert response.status_code == 200
     assert response.data['items'][0]['id'] == item.pk
@@ -307,9 +299,7 @@ def test_user_cannot_read_another_users_order(
 ):
     order = OrderFactory()
 
-    response = auth_api_client.get(
-        reverse('order-detail', args=[order.pk])
-    )
+    response = auth_api_client.get(reverse('order-detail', args=[order.pk]))
 
     assert response.status_code == 404
 
@@ -501,9 +491,7 @@ def test_user_can_remove_book_from_cart(auth_api_client):
         format='json',
     )
 
-    response = auth_api_client.delete(
-        reverse('cart-detail', args=[book.pk])
-    )
+    response = auth_api_client.delete(reverse('cart-detail', args=[book.pk]))
 
     assert response.status_code == 204
 
@@ -524,9 +512,7 @@ def test_user_can_clear_cart(auth_api_client):
         format='json',
     )
 
-    response = auth_api_client.delete(
-        reverse('cart-clear')
-    )
+    response = auth_api_client.delete(reverse('cart-clear'))
 
     assert response.status_code == 204
 
@@ -612,9 +598,7 @@ def test_jwt_access_token_authenticates_api_request(api_client):
     )
 
     api_client.credentials(
-        HTTP_AUTHORIZATION=(
-            f"Bearer {obtain_response.data['access']}"
-        )
+        HTTP_AUTHORIZATION=(f"Bearer {obtain_response.data['access']}")
     )
 
     response = api_client.get(reverse('book-list'))
@@ -646,7 +630,4 @@ def test_cors_header_is_returned_for_allowed_origin(
     )
 
     assert response.status_code == 200
-    assert (
-        response['Access-Control-Allow-Origin']
-        == 'http://localhost:3000'
-    )
+    assert response['Access-Control-Allow-Origin'] == 'http://localhost:3000'

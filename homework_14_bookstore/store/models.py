@@ -4,22 +4,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    email = models.EmailField(
-        _('email address'),
-        unique=True
-    )
+    email = models.EmailField(_('email address'), unique=True)
 
 
 class Category(models.Model):
-    name = models.CharField(
-        _('name'),
-        max_length=100
-    )
+    name = models.CharField(_('name'), max_length=100)
 
-    slug = models.SlugField(
-        _('slug'),
-        unique=True
-    )
+    slug = models.SlugField(_('slug'), unique=True)
 
     class Meta:
         verbose_name = _('category')
@@ -34,43 +25,25 @@ class Book(models.Model):
         Category,
         on_delete=models.CASCADE,
         related_name='books',
-        verbose_name=_('category')
+        verbose_name=_('category'),
     )
 
-    title = models.CharField(
-        _('title'),
-        max_length=255
-    )
+    title = models.CharField(_('title'), max_length=255)
 
-    author = models.CharField(
-        _('author'),
-        max_length=255
-    )
+    author = models.CharField(_('author'), max_length=255)
 
-    price = models.DecimalField(
-        _('price'),
-        max_digits=10,
-        decimal_places=2
-    )
+    price = models.DecimalField(_('price'), max_digits=10, decimal_places=2)
 
-    description = models.TextField(
-        _('description')
-    )
+    description = models.TextField(_('description'))
 
-    stock = models.PositiveIntegerField(
-        _('stock'),
-        default=0
-    )
+    stock = models.PositiveIntegerField(_('stock'), default=0)
 
     class Meta:
         verbose_name = _('book')
         verbose_name_plural = _('books')
 
         permissions = [
-            (
-                'manage_books',
-                _('Can manage books')
-            ),
+            ('manage_books', _('Can manage books')),
         ]
 
     def __str__(self):
@@ -83,54 +56,28 @@ class Order(models.Model):
     STATUS_CANCELLED = 'cancelled'
 
     STATUS_CHOICES = [
-        (
-            STATUS_PENDING,
-            _('Pending payment')
-        ),
-        (
-            STATUS_PAID,
-            _('Paid')
-        ),
-        (
-            STATUS_CANCELLED,
-            _('Cancelled')
-        ),
+        (STATUS_PENDING, _('Pending payment')),
+        (STATUS_PAID, _('Paid')),
+        (STATUS_CANCELLED, _('Cancelled')),
     ]
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='orders',
-        verbose_name=_('user')
+        User, on_delete=models.CASCADE, related_name='orders', verbose_name=_('user')
     )
 
-    email = models.EmailField(
-        _('email address')
-    )
+    email = models.EmailField(_('email address'))
 
-    total = models.DecimalField(
-        _('total'),
-        max_digits=10,
-        decimal_places=2
-    )
+    total = models.DecimalField(_('total'), max_digits=10, decimal_places=2)
 
     status = models.CharField(
-        _('status'),
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default=STATUS_PENDING
+        _('status'), max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING
     )
 
     stripe_session_id = models.CharField(
-        _('Stripe session ID'),
-        max_length=255,
-        blank=True
+        _('Stripe session ID'), max_length=255, blank=True
     )
 
-    created_at = models.DateTimeField(
-        _('created at'),
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
 
     class Meta:
         verbose_name = _('order')
@@ -142,28 +89,19 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name='items',
-        verbose_name=_('order')
+        Order, on_delete=models.CASCADE, related_name='items', verbose_name=_('order')
     )
 
     book = models.ForeignKey(
         Book,
         on_delete=models.PROTECT,
         related_name='order_items',
-        verbose_name=_('book')
+        verbose_name=_('book'),
     )
 
-    quantity = models.PositiveIntegerField(
-        _('quantity')
-    )
+    quantity = models.PositiveIntegerField(_('quantity'))
 
-    price = models.DecimalField(
-        _('price'),
-        max_digits=10,
-        decimal_places=2
-    )
+    price = models.DecimalField(_('price'), max_digits=10, decimal_places=2)
 
     class Meta:
         verbose_name = _('order item')
