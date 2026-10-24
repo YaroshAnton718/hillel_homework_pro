@@ -129,9 +129,7 @@ class OrderCreateSerializer(serializers.Serializer):
 
     def validate_items(self, items):
         if not items:
-            raise serializers.ValidationError(
-                'Order must contain at least one item.'
-            )
+            raise serializers.ValidationError('Order must contain at least one item.')
 
         quantities = {}
         books = {}
@@ -141,17 +139,13 @@ class OrderCreateSerializer(serializers.Serializer):
             quantity = item['quantity']
 
             books[book.pk] = book
-            quantities[book.pk] = (
-                quantities.get(book.pk, 0) + quantity
-            )
+            quantities[book.pk] = quantities.get(book.pk, 0) + quantity
 
         for book_id, quantity in quantities.items():
             book = books[book_id]
 
             if quantity > book.stock:
-                raise serializers.ValidationError(
-                    f'Not enough stock: {book.title}.'
-                )
+                raise serializers.ValidationError(f'Not enough stock: {book.title}.')
 
         return items
 
@@ -159,17 +153,10 @@ class OrderCreateSerializer(serializers.Serializer):
         request = self.context['request']
         items = validated_data.pop('items')
 
-        email = (
-            validated_data.get('email')
-            or request.user.email
-        )
+        email = validated_data.get('email') or request.user.email
 
         total = sum(
-            (
-                item['book'].price * item['quantity']
-                for item in items
-            ),
-            Decimal('0.00')
+            (item['book'].price * item['quantity'] for item in items), Decimal('0.00')
         )
 
         with transaction.atomic():
@@ -179,17 +166,20 @@ class OrderCreateSerializer(serializers.Serializer):
                 total=total,
             )
 
-            OrderItem.objects.bulk_create([
-                OrderItem(
-                    order=order,
-                    book=item['book'],
-                    quantity=item['quantity'],
-                    price=item['book'].price,
-                )
-                for item in items
-            ])
+            OrderItem.objects.bulk_create(
+                [
+                    OrderItem(
+                        order=order,
+                        book=item['book'],
+                        quantity=item['quantity'],
+                        price=item['book'].price,
+                    )
+                    for item in items
+                ]
+            )
 
         return order
+
 
 class CartItemSerializer(serializers.Serializer):
     book = BookNestedSerializer(read_only=True)
@@ -204,6 +194,7 @@ class CartItemSerializer(serializers.Serializer):
         decimal_places=2,
         read_only=True,
     )
+
 
 class CartAddSerializer(serializers.Serializer):
     book_id = serializers.PrimaryKeyRelatedField(

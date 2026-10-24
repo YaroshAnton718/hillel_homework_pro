@@ -11,6 +11,7 @@ django-cors-headers
 
 celery[redis]
 gunicorn
+whitenoise
 sentry-sdk
 
 pytest

@@ -18,10 +18,7 @@ def test_category_str_generated_with_ai():
 @pytest.mark.django_db
 def test_category_slug_generated_with_ai():
     # Generated with AI, reviewed and modified
-    category = CategoryFactory(
-        name='Django',
-        slug='django'
-    )
+    category = CategoryFactory(name='Django', slug='django')
 
     assert category.name == 'Django'
     assert category.slug == 'django'
@@ -38,11 +35,7 @@ def test_book_str_generated_with_ai():
 @pytest.mark.django_db
 def test_book_fields_generated_with_ai():
     # Generated with AI, reviewed and modified
-    book = BookFactory(
-        title='Python',
-        author='Guido van Rossum',
-        stock=15
-    )
+    book = BookFactory(title='Python', author='Guido van Rossum', stock=15)
 
     assert book.title == 'Python'
     assert book.author == 'Guido van Rossum'

@@ -14,9 +14,7 @@ from .models import Book, Category
 def invalidate_book_on_change(sender, instance, **kwargs):
     book_id = instance.pk
 
-    transaction.on_commit(
-        lambda: invalidate_book_cache(book_id)
-    )
+    transaction.on_commit(lambda: invalidate_book_cache(book_id))
 
 
 @receiver(post_save, sender=Category)
@@ -24,6 +22,4 @@ def invalidate_book_on_change(sender, instance, **kwargs):
 def invalidate_category_on_change(sender, instance, **kwargs):
     category_id = instance.pk
 
-    transaction.on_commit(
-        lambda: invalidate_category_cache(category_id)
-    )
+    transaction.on_commit(lambda: invalidate_category_cache(category_id))

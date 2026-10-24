@@ -8,12 +8,7 @@ from django.urls import reverse
 
 from store.cart import Cart
 from store.forms import RegisterForm
-from store.models import (
-    Book,
-    Category,
-    Order,
-    OrderItem,
-)
+from store.models import Order
 
 from .factories import (
     BookFactory,
@@ -44,10 +39,7 @@ def test_order_str():
 
 @pytest.mark.django_db
 def test_order_item_subtotal():
-    item = OrderItemFactory(
-        quantity=3,
-        price=Decimal('25.00')
-    )
+    item = OrderItemFactory(quantity=3, price=Decimal('25.00'))
     assert item.subtotal == Decimal('75.00')
 
 
@@ -150,9 +142,7 @@ def test_cart_total(book, client):
 
 @pytest.mark.django_db
 def test_book_list_view(client, book):
-    response = client.get(
-        reverse('store:book_list')
-    )
+    response = client.get(reverse('store:book_list'))
 
     assert response.status_code == 200
     assert book.title.encode() in response.content
@@ -160,21 +150,14 @@ def test_book_list_view(client, book):
 
 @pytest.mark.django_db
 def test_book_detail_view(client, book):
-    response = client.get(
-        reverse(
-            'store:book_detail',
-            args=[book.pk]
-        )
-    )
+    response = client.get(reverse('store:book_detail', args=[book.pk]))
 
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_book_create_requires_login(client):
-    response = client.get(
-        reverse('store:book_create')
-    )
+    response = client.get(reverse('store:book_create'))
 
     assert response.status_code == 302
 
@@ -183,38 +166,26 @@ def test_book_create_requires_login(client):
 def test_book_create_requires_permission(client, user):
     client.force_login(user)
 
-    response = client.get(
-        reverse('store:book_create')
-    )
+    response = client.get(reverse('store:book_create'))
 
     assert response.status_code == 403
 
 
 @pytest.mark.django_db
 def test_book_create_with_permission(client, user):
-    permission = Permission.objects.get(
-        codename='manage_books'
-    )
+    permission = Permission.objects.get(codename='manage_books')
 
     user.user_permissions.add(permission)
     client.force_login(user)
 
-    response = client.get(
-        reverse('store:book_create')
-    )
+    response = client.get(reverse('store:book_create'))
 
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_cart_add_view(client, book):
-    response = client.post(
-        reverse(
-            'store:cart_add',
-            args=[book.pk]
-        ),
-        {'quantity': 2}
-    )
+    response = client.post(reverse('store:cart_add', args=[book.pk]), {'quantity': 2})
 
     assert response.status_code == 302
 
@@ -227,12 +198,7 @@ def test_cart_remove_view(client, book):
     cart = Cart(client)
     cart.add(book, 2)
 
-    response = client.post(
-        reverse(
-            'store:cart_remove',
-            args=[book.pk]
-        )
-    )
+    response = client.post(reverse('store:cart_remove', args=[book.pk]))
 
     assert response.status_code == 302
     assert len(Cart(client)) == 0
@@ -243,9 +209,7 @@ def test_cart_clear_view(client, book):
     cart = Cart(client)
     cart.add(book, 2)
 
-    response = client.post(
-        reverse('store:cart_clear')
-    )
+    response = client.post(reverse('store:cart_clear'))
 
     assert response.status_code == 302
     assert len(Cart(client)) == 0
@@ -255,9 +219,7 @@ def test_cart_clear_view(client, book):
 def test_checkout_empty_cart(client, user):
     client.force_login(user)
 
-    response = client.get(
-        reverse('store:checkout')
-    )
+    response = client.get(reverse('store:checkout'))
 
     assert response.status_code == 302
 
@@ -265,9 +227,7 @@ def test_checkout_empty_cart(client, user):
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 async def test_async_book_list(async_client, book):
-    response = await async_client.get(
-        reverse('store:async_book_list')
-    )
+    response = await async_client.get(reverse('store:async_book_list'))
 
     assert response.status_code == 200
 
@@ -276,10 +236,7 @@ async def test_async_book_list(async_client, book):
 @pytest.mark.django_db(transaction=True)
 async def test_async_book_detail(async_client, book):
     response = await async_client.get(
-        reverse(
-            'store:async_book_detail',
-            args=[book.pk]
-        )
+        reverse('store:async_book_detail', args=[book.pk])
     )
 
     assert response.status_code == 200
@@ -288,19 +245,13 @@ async def test_async_book_detail(async_client, book):
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 async def test_async_book_count(async_client, book):
-    response = await async_client.get(
-        reverse('store:async_book_count')
-    )
+    response = await async_client.get(reverse('store:async_book_count'))
 
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_checkout_uses_stripe_and_email(
-    client,
-    user,
-    book
-):
+def test_checkout_uses_stripe_and_email(client, user, book):
     client.force_login(user)
 
     cart = Cart(client)
@@ -312,19 +263,14 @@ def test_checkout_uses_stripe_and_email(
         {
             'id': 'cs_test_123',
             'url': 'https://stripe.test/session',
-        }
+        },
     )()
 
-    with patch(
-        'store.views.send_order_email.delay'
-    ) as email_mock, patch(
-        'store.views.stripe.checkout.Session.create',
-        return_value=fake_session
+    with patch('store.views.send_order_email.delay') as email_mock, patch(
+        'store.views.stripe.checkout.Session.create', return_value=fake_session
     ) as stripe_mock:
 
-        response = client.get(
-            reverse('store:checkout')
-        )
+        response = client.get(reverse('store:checkout'))
 
     assert response.status_code == 302
     assert response.url == fake_session.url
@@ -334,24 +280,12 @@ def test_checkout_uses_stripe_and_email(
 
 
 @pytest.mark.django_db
-def test_checkout_success_marks_order_paid(
-    client,
-    user,
-    book
-):
+def test_checkout_success_marks_order_paid(client, user, book):
     client.force_login(user)
 
-    order = OrderFactory(
-        user=user,
-        total=book.price
-    )
+    order = OrderFactory(user=user, total=book.price)
 
-    OrderItemFactory(
-        order=order,
-        book=book,
-        quantity=1,
-        price=book.price
-    )
+    OrderItemFactory(order=order, book=book, quantity=1, price=book.price)
 
     fake_session = type(
         'Session',
@@ -359,25 +293,17 @@ def test_checkout_success_marks_order_paid(
         {
             'payment_status': 'paid',
             'metadata': type(
-                'Metadata',
-                (),
-                {
-                    'to_dict': lambda self: {
-                        'order_id': str(order.pk)
-                    }
-                }
-            )()
-        }
+                'Metadata', (), {'to_dict': lambda self: {'order_id': str(order.pk)}}
+            )(),
+        },
     )()
 
     with patch(
-        'store.views.stripe.checkout.Session.retrieve',
-        return_value=fake_session
+        'store.views.stripe.checkout.Session.retrieve', return_value=fake_session
     ):
 
         response = client.get(
-            reverse('store:checkout_success'),
-            {'session_id': 'cs_test_123'}
+            reverse('store:checkout_success'), {'session_id': 'cs_test_123'}
         )
 
     order.refresh_from_db()

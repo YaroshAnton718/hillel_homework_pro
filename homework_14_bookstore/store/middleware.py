@@ -1,7 +1,6 @@
 import logging
 import time
 
-
 logger = logging.getLogger('store')
 
 
@@ -16,11 +15,7 @@ class RequestLoggingMiddleware:
 
         duration = time.time() - start_time
 
-        user = (
-            request.user.username
-            if request.user.is_authenticated
-            else 'Anonymous'
-        )
+        user = request.user.username if request.user.is_authenticated else 'Anonymous'
 
         logger.info(
             '%s %s | user=%s | status=%s | %.3fs',

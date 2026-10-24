@@ -55,25 +55,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'title',
-        'author',
-        'price',
-        'stock',
-        'category'
-    )
+    list_display = ('id', 'title', 'author', 'price', 'stock', 'category')
 
-    list_filter = (
-        'category',
-        'author'
-    )
+    list_filter = ('category', 'author')
 
-    search_fields = (
-        'title',
-        'author',
-        'description'
-    )
+    search_fields = ('title', 'author', 'description')
 
 
 @admin.register(Order)
