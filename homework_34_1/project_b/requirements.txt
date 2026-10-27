@@ -1,0 +1,17 @@
+Django>=4.2
+psycopg
+
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+drf-spectacular
+
+celery[redis]
+gunicorn
+whitenoise
+sentry-sdk
+
+pytest
+pytest-django
+pytest-cov
+factory-boy

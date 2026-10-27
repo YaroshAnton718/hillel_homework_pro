@@ -1,0 +1,36 @@
+{% extends 'store/base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% translate "Async book list" %}</h2>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>{% translate "Title" %}</th>
+            <th>{% translate "Author" %}</th>
+            <th>{% translate "Category" %}</th>
+            <th>{% translate "Price" %}</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for book in books %}
+
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.category }}</td>
+            <td>{{ book.price }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

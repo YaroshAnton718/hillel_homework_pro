@@ -1,0 +1,34 @@
+{% extends 'store/base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% translate "Delete book" %}</h2>
+
+<p>
+    {% blocktranslate with title=object.title %}
+        Are you sure you want to delete: {{ title }}?
+    {% endblocktranslate %}
+</p>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    <button
+        type="submit"
+        class="btn btn-danger"
+    >
+        {% translate "Delete" %}
+    </button>
+
+    <a
+        href="{% url 'store:book_list' %}"
+        class="btn btn-secondary"
+    >
+        {% translate "Cancel" %}
+    </a>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,171 @@
+x-env-a: &env-a
+  env_file:
+    - ./project_a/.env
+  restart: unless-stopped
+
+x-env-b: &env-b
+  env_file:
+    - ./project_b/.env
+  restart: unless-stopped
+
+x-web-healthcheck: &web-healthcheck
+  test:
+    [
+      "CMD-SHELL",
+      "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health/', timeout=5)\""
+    ]
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 30s
+
+services:
+
+  # ProjectA
+
+  db-a:
+    <<: *env-a
+    image: postgres:18
+    volumes:
+      - postgres_a:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis-a:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_a:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web-a:
+    <<: *env-a
+    build: ./project_a
+    image: bookstore-a:latest
+    expose:
+      - "8000"
+    volumes:
+      - static_a:/app/staticfiles
+    depends_on:
+      db-a:
+        condition: service_healthy
+      redis-a:
+        condition: service_healthy
+    healthcheck: *web-healthcheck
+
+  celery-a:
+    <<: *env-a
+    image: bookstore-a:latest
+    entrypoint: ["celery"]
+    command: ["-A", "bookstore", "worker", "--loglevel=info"]
+    volumes:
+      - reports_a:/app/reports
+    depends_on:
+      web-a:
+        condition: service_healthy
+
+  celery-beat-a:
+    <<: *env-a
+    image: bookstore-a:latest
+    entrypoint: ["celery"]
+    command: ["-A", "bookstore", "beat", "--loglevel=info"]
+    depends_on:
+      web-a:
+        condition: service_healthy
+
+  # ProjectB
+
+  db-b:
+    <<: *env-b
+    image: postgres:18
+    volumes:
+      - postgres_b:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis-b:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_b:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web-b:
+    <<: *env-b
+    build: ./project_b
+    image: warehouse-b:latest
+    expose:
+      - "8000"
+    volumes:
+      - static_b:/app/staticfiles
+    depends_on:
+      db-b:
+        condition: service_healthy
+      redis-b:
+        condition: service_healthy
+    healthcheck: *web-healthcheck
+
+  celery-b:
+    <<: *env-b
+    image: warehouse-b:latest
+    entrypoint: ["celery"]
+    command: ["-A", "warehouse_service", "worker", "--loglevel=info"]
+    volumes:
+      - reports_b:/app/reports
+    depends_on:
+      web-b:
+        condition: service_healthy
+
+  celery-beat-b:
+    <<: *env-b
+    image: warehouse-b:latest
+    entrypoint: ["celery"]
+    command: ["-A", "warehouse_service", "beat", "--loglevel=info"]
+    depends_on:
+      web-b:
+        condition: service_healthy
+
+  # NGINX
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+      - "8001:81"
+    volumes:
+      - static_a:/static_a:ro
+      - static_b:/static_b:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      web-a:
+        condition: service_healthy
+      web-b:
+        condition: service_healthy
+
+
+volumes:
+  postgres_a:
+  postgres_b:
+  redis_a:
+  redis_b:
+  static_a:
+  static_b:
+  reports_a:
+  reports_b:

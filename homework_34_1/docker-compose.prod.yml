@@ -1,0 +1,38 @@
+services:
+  db-a:
+    env_file: [./project_a/.env, ./project_a/.env.prod]
+    restart: always
+  db-b:
+    env_file: [./project_b/.env, ./project_b/.env.prod]
+    restart: always
+
+  redis-a:
+    restart: always
+  redis-b:
+    restart: always
+
+  web-a:
+    env_file: [./project_a/.env, ./project_a/.env.prod]
+    restart: always
+  celery-a:
+    env_file: [./project_a/.env, ./project_a/.env.prod]
+    restart: always
+  celery-beat-a:
+    env_file: [./project_a/.env, ./project_a/.env.prod]
+    restart: always
+
+  web-b:
+    env_file: [./project_b/.env, ./project_b/.env.prod]
+    restart: always
+  celery-b:
+    env_file: [./project_b/.env, ./project_b/.env.prod]
+    restart: always
+  celery-beat-b:
+    env_file: [./project_b/.env, ./project_b/.env.prod]
+    restart: always
+
+  nginx:
+    restart: always
+    ports: !override
+      - "80:80"
+      - "8001:81"
