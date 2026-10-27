@@ -1,0 +1,13 @@
+[flake8]
+max-line-length = 100
+extend-ignore = E203, W503
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    migrations
+per-file-ignores =
+    warehouse_service/settings/*.py: F401, F403, F405
+    warehouse/apps.py: F401

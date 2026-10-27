@@ -1,0 +1,41 @@
+{% extends 'store/base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{{ book.title }}</h2>
+
+<p>
+    <strong>{% translate "Author:" %}</strong>
+    {{ book.author }}
+</p>
+
+<p>
+    <strong>{% translate "Category:" %}</strong>
+    {{ book.category }}
+</p>
+
+<p>
+    <strong>{% translate "Price:" %}</strong>
+    {{ book.price }}
+</p>
+
+<p>
+    <strong>{% translate "Description:" %}</strong>
+</p>
+
+<p>{{ book.description }}</p>
+
+<p>
+    <strong>{% translate "Stock:" %}</strong>
+    {{ book.stock }}
+</p>
+
+<a
+    href="{% url 'store:book_list' %}"
+    class="btn btn-secondary"
+>
+    {% translate "Back" %}
+</a>
+
+{% endblock %}

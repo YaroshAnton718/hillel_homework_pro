@@ -1,0 +1,33 @@
+{% extends 'store/base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% translate "Log in" %}</h2>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        {% translate "Log in" %}
+    </button>
+
+</form>
+
+<p class="mt-3">
+
+    {% translate "Don't have an account?" %}
+
+    <a href="{% url 'store:register' %}">
+        {% translate "Register" %}
+    </a>
+
+</p>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "email address"
+msgstr "електронна адреса"
+
+msgid "book ID"
+msgstr "ID книги"
+
+msgid "title"
+msgstr "назва"
+
+msgid "quantity"
+msgstr "кількість"
+
+msgid "updated at"
+msgstr "оновлено"
+
+msgid "created at"
+msgstr "створено"
+
+msgid "status"
+msgstr "статус"
+
+msgid "order ID"
+msgstr "ID замовлення"
+
+msgid "stock item"
+msgstr "позиція на складі"
+
+msgid "stock items"
+msgstr "позиції на складі"
+
+msgid "Can manage stock"
+msgstr "Може керувати складом"
+
+msgid "Can manage shipments"
+msgstr "Може керувати відправленнями"
+
+msgid "Waiting for stock"
+msgstr "Очікує поповнення складу"
+
+msgid "Pending"
+msgstr "Очікує збирання"
+
+msgid "Packed"
+msgstr "Зібрано"
+
+msgid "Shipped"
+msgstr "Відправлено"
+
+msgid "Cancelled"
+msgstr "Скасовано"
+
+msgid "shipment"
+msgstr "відправлення"
+
+msgid "shipments"
+msgstr "відправлення"
+
+msgid "shipment item"
+msgstr "позиція відправлення"
+
+msgid "shipment items"
+msgstr "позиції відправлення"
+
+msgid "Shipment for order #%(id)s"
+msgstr "Відправлення для замовлення №%(id)s"
+
+msgid "Cannot change status from %(old)s to %(new)s."
+msgstr "Неможливо змінити статус з %(old)s на %(new)s."
